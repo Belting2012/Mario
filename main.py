@@ -2,20 +2,12 @@ import sounddevice as sd
 import numpy as np
 from pygame import *
 from random import randint
+from voice import audio_cb
+import voice
 
 # ====== АУДІО ======
 sr = 16000
 block = 256
-mic_level = 0.0
-
-
-def audio_cb(indata, frames, time, status):
-    global mic_level
-    if status:
-        return
-    rms = float(np.sqrt(np.mean(indata ** 2)))
-    mic_level = 0.85 * mic_level + 0.15 * rms
-
 
 init()
 window_size = 1200, 800
@@ -74,7 +66,7 @@ with sd.InputStream(samplerate=sr, channels=1, blocksize=block, callback=audio_c
                 quit()
 
         # ЛОГІКА РУХУ
-        if mic_level > THRESH:
+        if voice.mic_level > THRESH:
             y_vel = IMPULSE
         y_vel += gravity
         player_rect.y += int(y_vel)
